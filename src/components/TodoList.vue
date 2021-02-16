@@ -1,7 +1,7 @@
 <template>
   <section>
       <ul>
-        <li class="shadow" v-for="(todoItem, index) in todoItems" v-bind:key="todoItem">
+        <li class="shadow" v-for="(todoItem, index) in propsdata" v-bind:key="todoItem">
             <i class="checkBtn fa fa-check"></i>
             {{ todoItem }}
             <span class="removeBtn" type="button" v-on:click="removeTodo(todoItem, index)">
@@ -15,22 +15,10 @@
 
 <script>
 export default {
-    data: function(){
-        return{
-            todoItems: []
-        }
-    },
-    created: function(){
-        if (localStorage.length > 0){
-            for(var i=0; i < localStorage.length; i++){
-                this.todoItems.push(localStorage.key(i))
-            }
-        }
-    },
+    props: ['propsdata'],
     methods: {
         removeTodo(todoItem, index){//index vue for에서 기본으로 제공하는 인덱스 변수
-            localStorage.removeItem(todoItem);//localStorage의 데이터 삭제 API
-            this.todoItems.splice(index, 1);//해당 인덱스의 1개 삭제
+            this.$emit('removeTodo', todoItem, index);
         }
     }
 }

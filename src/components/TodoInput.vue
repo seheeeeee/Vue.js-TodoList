@@ -18,7 +18,7 @@ export default {
         addTodo(){
             if(this.newTodoItem !== ""){//인풋 박스의 입력 값이 있을 때만 저장
                 var value = this.newTodoItem && this.newTodoItem.trim();//안풋 박스에 입력된 텍스트의 앞뒤 공백 문자열 제거
-                localStorage.setItem(value, value);
+                this.$emit('addTodo', value);
                 this.clearInput();//인풋 박스의 입력 값을 초기화
             }
         },

@@ -1,68 +1,81 @@
 <template>
   <div id="app">
-    <todo-header></todo-header>
-    <todo-input v-on:addTodo="addTodo"></todo-input>
-    <todo-list v-bind:propsdata="todoItems" @removeTodo="removeTodo"></todo-list>
-    <todo-footer v-on:removeAll="clearAll"></todo-footer>
+    <div class="app-phone">
+      <insta-header :step="step" v-on:goHomeHeader="goHome"></insta-header>
+      <insta-body 
+      v-bind:step="step"
+      v-bind:posts="posts" 
+      v-bind:filters="filters"
+      v-bind:image="image"
+      v-bind:selectedFilter="selectedFilter">
+      <!-- v-model:caption="caption"> -->
+      </insta-body>
+      <insta-footer v-on:step1="step1" v-on:goHomeFooter="goHome"></insta-footer>
+    </div>
   </div>
 </template>
 
 <script>
-import TodoHeader from './components/TodoHeader.vue'
-import TodoInput from './components/TodoInput.vue'
-import TodoList from './components/TodoList.vue'
-import TodoFooter from './components/TodoFooter.vue'
+import instaHeader from './components/instaHeader.vue'
+import instaBody from './components/instaBody.vue'
+import instaFooter from './components/instaFooter.vue'
+
+import posts from './data/post.js'
+import filters from './data/filter.js'
+import EventBus from './event-bus.js' //부모-자식 사이가 아니여도 자유롭게 사용이 가능함(단, 너무 많이 쓰면 관리 힘듦)
 
 export default {
-  components: {
-    'todo-header': TodoHeader,
-    'todo-input': TodoInput,
-    'todo-list': TodoList,
-    'todo-footer': TodoFooter
-  },
   data: function(){
-    return {
-      todoItems: []
+    return{
+      posts,
+      filters,
+      step: 1,
+      image: "",
+      selectedFilter: "",
+      caption: "",
+    }
+  },
+  methods: {
+    step1: function(image, step){
+      this.image = image;
+      this.step = step;
+    },
+    goHome: function(){
+      this.image = "";
+      this.selectedFilter = "";
+      this.caption = "";
+      this.step = 1;
     }
   },
   created: function(){
-        if (localStorage.length > 0){
-            for(var i=0; i < localStorage.length; i++){
-                this.todoItems.push(localStorage.key(i))
-            }
-        }
-    },
-  methods: {
-    addTodo(todoItem){
-      //localStorage에 데이터를 추가하는 로직
-      localStorage.setItem(todoItem, todoItem);
-      this.todoItems.push(todoItem);
-    },
-    clearAll(){
-      localStorage.clear();
-      this.todoItems = [];
-    },
-    removeTodo(todoItem, index){
-      localStorage.removeItem(todoItem);//localStorage의 데이터 삭제 API
-      this.todoItems.splice(index, 1);//해당 인덱스의 1개 삭제
-    }
+    EventBus.$on("filter-selected", evt => {
+      this.selectedFilter = evt.filter;
+    });
+  },
+  components: {
+    'insta-header': instaHeader,
+    'insta-body': instaBody,
+    'insta-footer': instaFooter
   }
 }
 </script>
 
-<style>
+<style scoped>
+  *{
+    margin: 0; padding: 0;
+  }
   body{
-    text-align: center;
-    background-color: #f6f6f8;
+    background-color: #fff;
   }
-  input{
-    border-style: groove;
-    width: 200px;
+  #app{
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-  button{
-    border-style: groove;
-  }
-  .shadow{
-    box-shadow: 5px 10px 10px rgba(0,0,0,0.03);
+  .app-phone{
+    width: 375px;
+    height: 620px;
+    overflow: hidden;
+    background-color: #fff;
   }
 </style>
